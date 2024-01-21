@@ -8,7 +8,7 @@ System.Windows.Forms.dll などGUI関係のアセンブリに依存します。
 # 動作環境
 
 - Windows 8.1以降
-- .NET Framework 4.0 以降、または互換性のある .NET 実装
+- .NET Framework 4.5.1 以降、または互換性のある .NET 実装
 
 
 # 依存リポジトリ
