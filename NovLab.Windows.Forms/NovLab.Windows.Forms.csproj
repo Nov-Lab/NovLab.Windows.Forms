@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="XListBox.cs" />
     <Compile Include="XListView.cs" />
     <Compile Include="XMessageBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
