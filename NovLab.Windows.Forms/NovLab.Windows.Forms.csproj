@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnumListItem.cs" />
     <Compile Include="XForm.cs" />
     <Compile Include="XListBox.cs" />
     <Compile Include="XListView.cs" />
