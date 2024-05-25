@@ -1,6 +1,7 @@
 ﻿// @(h)XListView.cs ver 0.00 ( '22.05.16 Nov-Lab ) 作成開始
 // @(h)XListView.cs ver 0.21 ( '22.05.16 Nov-Lab ) アルファ版完成
 // @(h)XListView.cs ver 0.22 ( '22.05.20 Nov-Lab ) 機能追加：XSetSelectedIndex, XGetSelectedIndex, XAdd を追加した。
+// @(h)XListView.cs ver 0.23 ( '24.05.25 Nov-Lab ) 機能修正：XListView.XAddItemWithScroll メソッドで、一度に複数のリストビュー項目を追加できるようにした。
 
 // @(s)
 // 　【ListView 拡張メソッド】System.Windows.Forms.ListView クラスに拡張メソッドを追加します。
@@ -26,10 +27,12 @@ namespace NovLab.Windows.Forms
         /// リストビューに項目を追加し、追加前の選択状態に応じてスクロールや選択状態の変更を行います。
         /// </summary>
         /// <param name="listView">[in ]：対象リストビュー</param>
-        /// <param name="item">    [in ]：リストビュー項目</param>
+        /// <param name="items">   [in ]：リストビュー項目配列</param>
         /// <returns>
-        /// 追加したリストビュー項目
+        /// 最後に追加したリストビュー項目
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="items"/> が null です。</exception>
+        /// <exception cref="ArgumentException">    <paramref name="items"/> に要素がありません。</exception>
         /// <remarks>
         /// <code>
         /// 追加前の選択状態            ：追加後の動作
@@ -41,8 +44,23 @@ namespace NovLab.Windows.Forms
         /// </code>
         /// </remarks>
         //--------------------------------------------------------------------------------
-        public static ListViewItem XAddItemWithScroll(this ListView listView, ListViewItem item)
+        public static ListViewItem XAddItemWithScroll(this ListView listView, params ListViewItem[] items)
         {
+            //------------------------------------------------------------
+            /// 引数をチェックする
+            //------------------------------------------------------------
+            if (items == null)
+            {                                                           //// リストビュー項目配列 = null の場合
+                throw                                                   /////  引数不正例外(null値)をスローする
+                    new ArgumentNullException(nameof(items));
+            }
+            if (items.Length == 0)
+            {                                                           //// リストビュー項目配列に要素がない場合
+                throw                                                   /////  引数不正例外(空の配列)をスローする
+                    new ArgumentException("配列に要素がありません。", nameof(items));
+            }
+
+
             //------------------------------------------------------------
             /// 追加処理後にスクロールすべきかどうかを決定する
             //------------------------------------------------------------
@@ -76,15 +94,16 @@ namespace NovLab.Windows.Forms
             //------------------------------------------------------------
             /// リストビューに項目を追加する
             //------------------------------------------------------------
-            var addedItem = listView.Items.Add(item);                   //// リストビューに項目を追加する
+            listView.Items.AddRange(items);                             //// リストビューにリストビュー項目配列をまとめて追加する
+            var addedItem = listView.Items[listView.Items.Count - 1];   //// 最後に追加したリストビュー項目を取得する
 
             if (postScroll)
             {                                                           //// 追加処理後スクロールフラグ = true の場合
-                addedItem.EnsureVisible();                              /////  追加したリストビューアイテムが表示されるようにスクロールする
+                addedItem.EnsureVisible();                              /////  最後に追加したリストビューアイテムが表示されるようにスクロールする
             }
             if (lastItemSelected)
             {                                                           //// 最終アイテム単一選択中フラグ = true の場合
-                listView.SelectedIndices.Clear();                       /////  追加したアイテムを単一選択状態にしてフォーカスを移動する
+                listView.SelectedIndices.Clear();                       /////  最後に追加したアイテムを単一選択状態にしてフォーカスを移動する
                 addedItem.Selected = true;
                 listView.FocusedItem = addedItem;
             }
@@ -187,5 +206,6 @@ namespace NovLab.Windows.Forms
             return subItem;                                             //// 戻り値 = 追加したサブ項目 で関数終了
         }
 
-    }
-}
+    } // class
+
+} // namespace
